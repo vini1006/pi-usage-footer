@@ -79,16 +79,3 @@ export function parseUsage(value: unknown): Usage {
   if (!usage.fiveHour && !usage.sevenDay) throw invalid();
   return usage;
 }
-
-export function formatUsage(usage: Usage, now = Date.now()): string {
-  const window = (label: string, value?: UsageWindow): string => {
-    if (!value) return `${label} —`;
-    if (value.resetsAt <= now) return `${label} 갱신 대기`;
-    const minutes = Math.ceil((value.resetsAt - now) / 60_000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const reset = days ? `${days}d${hours % 24 ? `${hours % 24}h` : ""}` : hours ? `${hours}h${minutes % 60 ? `${minutes % 60}m` : ""}` : `${minutes}m`;
-    return `${label} ${Number(value.used.toFixed(1))}% ↻${reset}`;
-  };
-  return `Claude ${window("5h", usage.fiveHour)} | ${window("7d", usage.sevenDay)}`;
-}
