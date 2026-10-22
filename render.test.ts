@@ -53,7 +53,8 @@ test("color painting, text and extra widgets", () => {
 test("helpers", () => {
   assert.equal(formatDuration(3 * 864e5 + 3 * 36e5 + 8 * 6e4), "3d 3hr 8m");
   assert.equal(formatDuration((4 * 60 + 48) * 6e4), "4hr 48m");
-  assert.equal(formatDuration(30e3), "<1m");
+  assert.equal(formatDuration(30e3), "1m"); // rounds up, never shows reset early
+  assert.equal(formatDuration(0), "<1m");
   assert.equal(bar(50), "█████░░░░░");
   assert.equal(formatTokens(999), "999");
   assert.equal(formatTokens(1500), "1.5k");
