@@ -1,0 +1,22 @@
+{
+  "name": "pi-usage-footer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Configurable multi-line pi footer with Claude Code / OpenAI subscription usage blocks",
+  "scripts": {
+    "test": "node --test *.test.ts"
+  },
+  "pi": {
+    "extensions": [
+      "./extension.ts"
+    ]
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  }
+}
