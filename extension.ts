@@ -1,8 +1,9 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { homedir } from "node:os";
 import { fetchCodexUsage, readCodexAccountId } from "./codex.ts";
+import { openEditor } from "./editor.ts";
 import { renderLines, type FooterInput, type UsageState } from "./render.ts";
-import { loadSettings, type Settings } from "./settings.ts";
+import { loadSettings, saveSettings, SETTINGS_PATH, type Settings } from "./settings.ts";
 import { fetchUsage, readClaudeToken, type Usage } from "./usage.ts";
 
 type Model = NonNullable<ExtensionContext["model"]>;
@@ -11,6 +12,8 @@ type State = { ctx: ExtensionContext; model: Model; usage: UsageState; failed: b
 const POLL_MS = 300_000;
 const REPAINT_MS = 60_000;
 const FAILURE_BACKOFF_MS = 30_000;
+// Sample data so usage widgets are visible in the editor preview even on providers without usage.
+const previewUsage = (): UsageState => ({ status: "ok", usage: { fiveHour: { used: 25, resetsAt: Date.now() + 3 * 3_600_000 }, sevenDay: { used: 40, resetsAt: Date.now() + 3 * 86_400_000 } } });
 const hasUsage = (provider?: string) => provider === "claude-code" || provider === "openai";
 
 export default function (pi: ExtensionAPI) {
@@ -136,4 +139,32 @@ export default function (pi: ExtensionAPI) {
     requestRender?.();
   });
   pi.on("session_shutdown", () => stop());
+
+  pi.registerCommand("pi-usage-footer", {
+    description: "Edit the footer layout (or `refresh` to refetch usage)",
+    handler: async (args, ctx) => {
+      if (ctx.mode !== "tui") {
+        ctx.ui.notify("/pi-usage-footer requires interactive mode", "warning");
+        return;
+      }
+      if (args.trim() === "refresh") {
+        if (!current) { ctx.ui.notify("No usage for the current provider", "info"); return; }
+        current.fetchedAt = undefined;
+        await refresh();
+        ctx.ui.notify(current?.usage.status === "ok" ? "Usage refreshed" : "Usage unavailable", current?.usage.status === "ok" ? "info" : "warning");
+        return;
+      }
+      const edited = await openEditor(ctx, settings, (s, width) => renderLines(s, { ...input(null), usage: current?.usage ?? previewUsage() }, width, (_c, t) => t));
+      if (!edited) return;
+      try {
+        saveSettings(edited);
+      } catch (e) {
+        ctx.ui.notify(`Could not save ${SETTINGS_PATH}: ${(e as Error).message}`, "error");
+        return;
+      }
+      settings = edited;
+      requestRender?.();
+      ctx.ui.notify(`Saved to ${SETTINGS_PATH}`, "info");
+    },
+  });
 }
