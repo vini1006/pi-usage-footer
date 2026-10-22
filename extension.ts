@@ -89,7 +89,7 @@ export default function (pi: ExtensionAPI) {
     void refresh();
   }
 
-  function input(branch: string | null): FooterInput {
+  function input(branch: string | null, statuses?: ReadonlyMap<string, string>): FooterInput {
     const ctx = ctxNow!;
     const contextUsage = ctx.getContextUsage();
     return {
@@ -103,6 +103,7 @@ export default function (pi: ExtensionAPI) {
       startedAt: Date.parse(ctx.sessionManager.getHeader()?.timestamp ?? "") || undefined,
       now: Date.now(),
       usage: current?.usage ?? { status: "none" },
+      statuses,
     };
   }
 
@@ -112,7 +113,7 @@ export default function (pi: ExtensionAPI) {
       const unsubscribe = footerData.onBranchChange(() => tui.requestRender());
       return {
         invalidate() {},
-        render: (width: number) => renderLines(settings, input(footerData.getGitBranch()), width, (c, t) => (c ? theme.fg(c as never, t) : t)),
+        render: (width: number) => renderLines(settings, input(footerData.getGitBranch(), footerData.getExtensionStatuses()), width, (c, t) => (c ? theme.fg(c as never, t) : t)),
         dispose() {
           unsubscribe();
           requestRender = undefined;

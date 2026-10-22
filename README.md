@@ -22,7 +22,7 @@ Then `/reload`. If you also run `pi-claude-usage`, remove it (`pi remove ~/.pi/l
 
 ## Widgets
 
-`model`, `thinking`, `context`, `cwd`, `git`, `block5h`, `block1w`, `sessionId`, `elapsed`, `text` (your own string), `separator`.
+`model`, `thinking`, `context`, `cwd`, `git`, `block5h`, `block1w`, `sessionId`, `elapsed`, `statuses` (other extensions' footer statuses, e.g. ponytail), `text` (your own string), `separator`.
 A line is hidden when none of its widgets has anything to show, so usage lines vanish on unsupported providers.
 
 ## Configure: `/pi-usage-footer`

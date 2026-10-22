@@ -42,7 +42,7 @@ test("add a text widget via picker + input, then save returns it", async () => {
   const send = (k: string) => component.handleInput(k);
   send("a"); send("\r");           // new line, open its (empty) widget view
   send("a");                       // picker
-  for (let i = 0; i < 9; i++) send("\x1b[B"); // down to "text" (index 9)
+  for (let i = 0; i < 10; i++) send("\x1b[B"); // down to "text" (index 10)
   send("\r");                      // add
   send("t");                       // text input
   for (const ch of "hi") send(ch);

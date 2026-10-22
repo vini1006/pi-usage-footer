@@ -14,6 +14,7 @@ export type FooterInput = {
   startedAt?: number;
   now: number;
   usage: UsageState;
+  statuses?: ReadonlyMap<string, string>;
 };
 export type Paint = (color: string | undefined, text: string) => string;
 
@@ -69,6 +70,8 @@ export function renderWidget(w: Widget, i: FooterInput): string {
     case "block1w": return block("1w block", (u) => u.sevenDay, i);
     case "sessionId": return i.sessionId ?? "";
     case "elapsed": return i.startedAt === undefined ? "" : formatDuration(i.now - i.startedAt);
+    // Other extensions' footer statuses (e.g. ponytail), sorted by key like pi's default footer; they carry their own ANSI colors.
+    case "statuses": return [...(i.statuses ?? [])].sort(([a], [b]) => a.localeCompare(b)).map(([, t]) => t.replace(/[\r\n\t]+/g, " ").trim()).filter(Boolean).join(" ");
     case "text": return clean(w.text ?? "");
     case "separator": return " | ";
   }

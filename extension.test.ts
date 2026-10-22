@@ -32,7 +32,7 @@ function setup(t: any, provider = "claude-code", mode = "tui", codexKey: string 
   };
   extension({ on: (n: string, h: Function) => events.set(n, h), getThinkingLevel: () => "high", registerCommand() {} } as any);
   const render = () => {
-    const c = factory({ requestRender() {} }, { fg: (_c: string, t: string) => t }, { getGitBranch: () => "main", onBranchChange: () => () => {} });
+    const c = factory({ requestRender() {} }, { fg: (_c: string, t: string) => t }, { getGitBranch: () => "main", getExtensionStatuses: () => new Map(), onBranchChange: () => () => {} });
     return c.render(200) as string[];
   };
   return {

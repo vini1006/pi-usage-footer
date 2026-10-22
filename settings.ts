@@ -2,8 +2,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-export type WidgetType = "model" | "thinking" | "context" | "cwd" | "git" | "block5h" | "block1w" | "sessionId" | "elapsed" | "text" | "separator";
-export const WIDGET_TYPES: readonly WidgetType[] = ["model", "thinking", "context", "cwd", "git", "block5h", "block1w", "sessionId", "elapsed", "text", "separator"];
+export type WidgetType = "model" | "thinking" | "context" | "cwd" | "git" | "block5h" | "block1w" | "sessionId" | "elapsed" | "statuses" | "text" | "separator";
+export const WIDGET_TYPES: readonly WidgetType[] = ["model", "thinking", "context", "cwd", "git", "block5h", "block1w", "sessionId", "elapsed", "statuses", "text", "separator"];
 export const COLORS: readonly string[] = ["accent", "text", "muted", "dim", "success", "warning", "error", "borderAccent", "mdLink", "mdCode", "syntaxKeyword", "syntaxString", "syntaxNumber", "syntaxType"];
 export type Widget = { type: WidgetType; color?: string; text?: string };
 export type Settings = { lines: Widget[][] };
@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
     [w("cwd", "mdLink"), sep, w("git", "muted")],
     [w("block5h", "syntaxType")],
     [w("block1w", "syntaxType")],
+    [w("statuses")],
   ],
 };
 
