@@ -4,7 +4,7 @@ import { initialState, reduce, type EditorState, type Key } from "./editor-state
 import { COLORS, WIDGET_TYPES, type Settings } from "./settings.ts";
 
 const KEYS: [KeyId, Key][] = [["up", "up"], ["down", "down"], ["return", "enter"], ["escape", "esc"]];
-const CHARS = new Set(["a", "d", "[", "]", "c", "t", "r", "s"]);
+const CHARS: Key[] = ["a", "d", "[", "]", "c", "t", "r", "s"];
 const HINTS: Record<EditorState["view"], string> = {
   lines: "↑↓ select · enter edit line · a add line · d delete · r reset · s save · esc cancel",
   widgets: "↑↓ select · a add · d delete · [ ] move · c color · t text · esc back",
@@ -66,10 +66,11 @@ export function openEditor(ctx: ExtensionCommandContext, current: Settings, prev
       return out;
     };
 
-    const component: Component & Focusable = {
+    const component: Component & Focusable & { dispose(): void } = {
       get focused() { return focused; },
       set focused(v: boolean) { focused = v; if (input) input.focused = v; },
       invalidate() { picker?.invalidate(); },
+      dispose() { done(undefined); }, // settles the command if pi tears the screen down externally
       render(width: number): string[] {
         const border = new DynamicBorder((s: string) => theme.fg("accent", s)).render(width);
         const lines = [
@@ -92,8 +93,11 @@ export function openEditor(ctx: ExtensionCommandContext, current: Settings, prev
         else {
           const hit = KEYS.find(([k]) => matchesKey(data, k));
           if (hit) apply(hit[1]);
-          else if (CHARS.has(data)) apply(data as Key);
-          else return;
+          else {
+            const ch = CHARS.find((c) => matchesKey(data, c as KeyId));
+            if (!ch) return;
+            apply(ch);
+          }
         }
         redraw();
       },

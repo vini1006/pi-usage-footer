@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Configurable multi-line pi footer with Claude Code / OpenAI subscription usage blocks",
   "scripts": {
-    "test": "node --test *.test.ts"
+    "test": "node --test --test-timeout=10000 *.test.ts"
   },
   "pi": {
     "extensions": [

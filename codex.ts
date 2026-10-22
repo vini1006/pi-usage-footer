@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
-import { homedir } from "node:os";
 import { join } from "node:path";
+import { agentDir } from "./settings.ts";
 import type { Usage, UsageWindow } from "./usage.ts";
 
 const URL = "https://chatgpt.com/backend-api/wham/usage";
@@ -44,7 +44,7 @@ export async function fetchCodexUsage(token: string, accountId: string | undefin
 }
 
 // Non-secret account id only; the access token comes from pi's model registry.
-export function readCodexAccountId(authPath = join(process.env.PI_CODING_AGENT_DIR || join(homedir(), ".pi", "agent"), "auth.json")): string | undefined {
+export function readCodexAccountId(authPath = join(agentDir(), "auth.json")): string | undefined {
   try {
     const id = JSON.parse(readFileSync(authPath, "utf8"))?.["openai-codex"]?.accountId;
     return typeof id === "string" && id ? id : undefined;

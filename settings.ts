@@ -19,7 +19,13 @@ export const DEFAULT_SETTINGS: Settings = {
   ],
 };
 
-export const SETTINGS_PATH = join(process.env.PI_CODING_AGENT_DIR || join(homedir(), ".pi", "agent"), "pi-usage-footer.json");
+// Mirrors pi getAgentDir(): env override with ~ expansion.
+export function agentDir(env = process.env.PI_CODING_AGENT_DIR): string {
+  if (!env) return join(homedir(), ".pi", "agent");
+  return env === "~" ? homedir() : env.startsWith("~/") ? join(homedir(), env.slice(2)) : env;
+}
+
+export const SETTINGS_PATH = join(agentDir(), "pi-usage-footer.json");
 
 export function normalizeSettings(raw: unknown): Settings {
   const lines = (raw as { lines?: unknown } | null)?.lines;

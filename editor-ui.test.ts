@@ -52,3 +52,17 @@ test("add a text widget via picker + input, then save returns it", async () => {
   const saved: any = await result;
   assert.deepEqual(saved.lines.at(-1), [{ type: "text", text: "hi" }]);
 });
+
+test("kitty/CSI-u encoded letter keys work (a adds a line, s saves)", async () => {
+  const { result, component } = await drive([]);
+  component.handleInput("\x1b[97u"); // a
+  component.handleInput("\x1b[115u"); // s
+  const saved: any = await result;
+  assert.equal(saved.lines.length, DEFAULT_SETTINGS.lines.length + 1);
+});
+
+test("dispose settles the editor as cancelled", async () => {
+  const { result, component } = await drive([]);
+  component.dispose();
+  assert.equal(await result, undefined);
+});

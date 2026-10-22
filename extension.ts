@@ -149,9 +149,11 @@ export default function (pi: ExtensionAPI) {
       }
       if (args.trim() === "refresh") {
         if (!current) { ctx.ui.notify("No usage for the current provider", "info"); return; }
-        current.fetchedAt = undefined;
+        const state = current;
+        state.fetchedAt = undefined;
         await refresh();
-        ctx.ui.notify(current?.usage.status === "ok" ? "Usage refreshed" : "Usage unavailable", current?.usage.status === "ok" ? "info" : "warning");
+        if (current !== state) return; // session/model changed meanwhile; ctx may be stale
+        ctx.ui.notify(state.usage.status === "ok" ? "Usage refreshed" : "Usage unavailable", state.usage.status === "ok" ? "info" : "warning");
         return;
       }
       const edited = await openEditor(ctx, settings, (s, width) => renderLines(s, { ...input(null), usage: current?.usage ?? previewUsage() }, width, (_c, t) => t));

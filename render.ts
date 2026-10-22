@@ -50,6 +50,9 @@ function block(label: string, pick: (u: Usage) => UsageWindow | undefined, input
   return `${label}: ${bar(win.used)} ${win.used.toFixed(1)}% | ${formatDuration(win.resetsAt - input.now)}`;
 }
 
+// Settings/pasted text must not inject terminal control sequences (OSC52, cursor moves) into the footer.
+const clean = (t: string) => t.replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)?|\x1b\[[0-?]*[ -\/]*[@-~]|\x1b./g, "").replace(/[\x00-\x1f\x7f-\x9f]/g, " ");
+
 export function renderWidget(w: Widget, i: FooterInput): string {
   switch (w.type) {
     case "model": return i.modelName ?? "";
@@ -66,7 +69,7 @@ export function renderWidget(w: Widget, i: FooterInput): string {
     case "block1w": return block("1w block", (u) => u.sevenDay, i);
     case "sessionId": return i.sessionId ?? "";
     case "elapsed": return i.startedAt === undefined ? "" : formatDuration(i.now - i.startedAt);
-    case "text": return w.text ?? "";
+    case "text": return clean(w.text ?? "");
     case "separator": return " | ";
   }
 }

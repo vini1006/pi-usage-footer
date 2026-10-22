@@ -60,3 +60,11 @@ test("helpers", () => {
   assert.equal(formatTokens(1500), "1.5k");
   assert.equal(formatTokens(1_000_000), "1.0M");
 });
+
+test("terminal control sequences in text widgets are stripped", () => {
+  const evil = "a\x1b]52;c;ZXZpbA==\x07b\nc\x1b[2Jd\r\te";
+  const lines = renderLines({ lines: [[{ type: "text", text: evil }]] }, base(), 200, id);
+  assert.equal(lines.length, 1);
+  assert.doesNotMatch(lines[0], /[\x00-\x1f\x7f-\x9f]/);
+  assert.ok(lines[0].startsWith("a") && lines[0].includes("d"));
+});
