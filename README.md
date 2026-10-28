@@ -39,7 +39,7 @@ Saved to `~/.pi/agent/pi-usage-footer.json`. Hand edits are fine; invalid entrie
 
 | Provider | Source |
 |---|---|
-| `claude-code` | macOS Keychain item `Claude Code-credentials` → `api.anthropic.com/api/oauth/usage` (same as pi-claude-usage) |
+| `claude-code`, `claude-bridge` (`npm:pi-claude-bridge`) | macOS Keychain item `Claude Code-credentials` → `api.anthropic.com/api/oauth/usage` (same as pi-claude-usage) |
 | `openai` | `chatgpt.com/backend-api/wham/usage` using the **`openai-codex`** login (`/login` → ChatGPT Codex). The `openai` login itself is rejected by that API. |
 
 Other providers show no usage lines. Fetched at startup, every 5 minutes, and at turn start when stale; the countdown repaints every minute.

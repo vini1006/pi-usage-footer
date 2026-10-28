@@ -57,14 +57,18 @@ for (const mode of ["print", "rpc", "json"]) {
   });
 }
 
-test("claude-code shows usage blocks after fetch", async (t) => {
-  const h = setup(t);
-  await h.emit("session_start");
-  const lines = h.render();
-  assert.equal(lines[0], "Test Model | high | Context: ░░░░░░░░░░ 10/1.0k (1%)");
-  assert.equal(lines[2], "5hr block: ███░░░░░░░ 32.0% | 2hr 10m");
-  assert.equal(lines[3], "1w block: █████░░░░░ 48.0% | 3d 0hr 0m");
-});
+for (const provider of ["claude-code", "claude-bridge"]) {
+  test(`${provider} shows Claude usage blocks after fetch`, async (t) => {
+    const h = setup(t, provider);
+    await h.emit("session_start");
+    const lines = h.render();
+    assert.equal(lines[0], "Test Model | high | Context: ░░░░░░░░░░ 10/1.0k (1%)");
+    assert.equal(lines[2], "5hr block: ███░░░░░░░ 32.0% | 2hr 10m");
+    assert.equal(lines[3], "1w block: █████░░░░░ 48.0% | 3d 0hr 0m");
+    assert.equal(h.request.mock.calls[0].arguments[0], "https://api.anthropic.com/api/oauth/usage");
+    assert.equal(h.request.mock.calls[0].arguments[1].headers.Authorization, "Bearer test-access-token");
+  });
+}
 
 test("openai uses the openai-codex token via registry", async (t) => {
   const h = setup(t, "openai");

@@ -14,7 +14,7 @@ const REPAINT_MS = 60_000;
 const FAILURE_BACKOFF_MS = 30_000;
 // Sample data so usage widgets are visible in the editor preview even on providers without usage.
 const previewUsage = (): UsageState => ({ status: "ok", usage: { fiveHour: { used: 25, resetsAt: Date.now() + 3 * 3_600_000 }, sevenDay: { used: 40, resetsAt: Date.now() + 3 * 86_400_000 } } });
-const hasUsage = (provider?: string) => provider === "claude-code" || provider === "openai";
+const hasUsage = (provider?: string) => provider === "claude-code" || provider === "claude-bridge" || provider === "openai";
 
 export default function (pi: ExtensionAPI) {
   let settings: Settings = loadSettings();
@@ -27,7 +27,7 @@ export default function (pi: ExtensionAPI) {
   let model: Model | undefined;
 
   async function loadUsage(state: State, signal: AbortSignal): Promise<Usage> {
-    if (state.model.provider === "claude-code") {
+    if (state.model.provider === "claude-code" || state.model.provider === "claude-bridge") {
       const auth = await state.ctx.modelRegistry.getApiKeyAndHeaders(state.model);
       signal.throwIfAborted();
       if (!auth.ok) throw new Error("Claude Code configuration unavailable");
